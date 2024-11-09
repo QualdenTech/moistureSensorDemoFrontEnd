@@ -1,0 +1,36 @@
+.centered-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+  }
+
+
+  .sortable-table thead.table-header {
+    background-color: #f2f2f2; /* Change this to your desired color */
+    color: #333;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+.pagination li {
+    list-style-type: none;
+    margin: 0 5px;
+}
+
+.pagination li a {
+    padding: 5px 10px;
+    border: 1px solid #007bff;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.pagination .active a {
+    background-color: #007bff;
+    color: white;
+}
+
