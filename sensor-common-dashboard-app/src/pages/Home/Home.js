@@ -146,7 +146,7 @@ function Home() {
                     }}
                   />
                 </ListItemIcon>
-                <Typography style={{ fontFamily: 'Verdana, sans-serif' }}>
+                <Typography className='list-font'>
                   Soil Moisture Sensor Fixed Depth
                 </Typography>
               </ListItem>
@@ -161,7 +161,7 @@ function Home() {
                     }}
                   />
                 </ListItemIcon>
-                <Typography style={{ fontFamily: 'Courier New, monospace' }}>
+                <Typography className='list-font'>
                   Soil Moisture Sensor Variable Depth
                 </Typography>
               </ListItem>
@@ -169,7 +169,7 @@ function Home() {
                 <ListItemIcon>
                   <i className="fa fa-bell" style={{ fontSize: '24px', color: '#1976d2' }}></i> {/* Bell icon */}
                 </ListItemIcon>
-                <Typography style={{ fontFamily: 'Arial, sans-serif' }}>
+                <Typography className='list-font'>
                   Silage Monitoring Alarm System
                 </Typography>
               </ListItem>
@@ -177,7 +177,7 @@ function Home() {
                 <ListItemIcon>
                   <i className="fa fa-cloud" style={{ fontSize: '24px', color: '#1976d2' }}></i> {/* Cloud icon */}
                 </ListItemIcon>
-                <Typography style={{ fontFamily: 'Georgia, serif' }}>
+                <Typography className='list-font'>
                   Smart Automatic Weather Station
                 </Typography>
               </ListItem>
@@ -185,7 +185,7 @@ function Home() {
                 <ListItemIcon>
                   <i className="fa fa-sitemap" style={{ fontSize: '24px', color: '#1976d2' }}></i> {/* Layers icon */}
                 </ListItemIcon>
-                <Typography style={{ fontFamily: 'Tahoma, sans-serif' }}>
+                <Typography className='list-font'>
                   StartTopology
                 </Typography>
               </ListItem>
@@ -193,7 +193,7 @@ function Home() {
                 <ListItemIcon>
                   <i className="fa fa-cogs" style={{ fontSize: '24px', color: '#1976d2' }}></i> {/* Gear icon */}
                 </ListItemIcon>
-                <Typography style={{ fontFamily: 'Arial, sans-serif' }}>
+                <Typography className='list-font'>
                   Automatic Pump Controller
                 </Typography>
               </ListItem>
@@ -202,7 +202,7 @@ function Home() {
                   {/* <i className="fa fa-water" style={{ fontSize: '24px', color: '#1976d2' }}></i> Water icon */}
                   <i class="fa-solid fa-droplet" style={{ fontSize: '24px', color: '#1976d2' }}></i>
                 </ListItemIcon>
-                <Typography style={{ fontFamily: 'Verdana, sans-serif' }}>
+                <Typography className='list-font'>
                   Siphone System
                 </Typography>
               </ListItem>
@@ -210,7 +210,7 @@ function Home() {
                 <ListItemIcon>
                   <i className="fa fa-tint" style={{ fontSize: '24px', color: '#1976d2' }}></i> {/* Water Drop icon */}
                 </ListItemIcon>
-                <Typography style={{ fontFamily: 'Courier New, monospace' }}>
+                <Typography className='list-font'>
                   Water Meter
                 </Typography>
               </ListItem>
