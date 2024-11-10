@@ -9,6 +9,7 @@ export function FilteredDateFormat(dateString) {
 // Named Export: formatDate function
 export function formatDateWithdateAndTime(dateString) {
   const date = new Date(dateString); // Convert to Date object
+  const istDate = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
   const options = {
     year: 'numeric',
     month: '2-digit',
@@ -17,7 +18,7 @@ export function formatDateWithdateAndTime(dateString) {
     minute: '2-digit',
     hour12: false, // 24-hour format
   };
-  return new Intl.DateTimeFormat('en-GB', options).format(date);
+  return new Intl.DateTimeFormat('en-GB', options).format(istDate);
 };
   
   // function FilteredDateFormat(dateString) {

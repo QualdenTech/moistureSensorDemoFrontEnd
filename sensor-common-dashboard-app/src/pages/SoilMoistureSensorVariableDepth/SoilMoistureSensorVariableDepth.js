@@ -186,19 +186,19 @@ function SoilMoistureSensorVariableDepth() {
                                     <Box display="flex" alignItems="center" mr={3}>
                                         <ThermostatIcon color="primary" sx={{ mr: 1 }} />
                                         <Typography variant="body1" component="span">
-                                            <strong>Temperature (15cm):</strong> {latestData.p1} °C
+                                            <strong>Temperature (15cm):</strong> {latestData.p2} °C
                                         </Typography>
                                     </Box>
                                     <Box display="flex" alignItems="center" mr={3}>
                                         <ThermostatIcon color="primary" sx={{ mr: 1 }} />
                                         <Typography variant="body1" component="span">
-                                            <strong>Temperature (30cm):</strong> {latestData.p3} °C
+                                            <strong>Temperature (30cm):</strong> {latestData.p4} °C
                                         </Typography>
                                     </Box>
                                     <Box display="flex" alignItems="center" mr={3}>
                                         <ThermostatIcon color="primary" sx={{ mr: 1 }} />
                                         <Typography variant="body1" component="span">
-                                            <strong>Temperature (45cm):</strong> {latestData.p5} °C
+                                            <strong>Temperature (45cm):</strong> {latestData.p6} °C
                                         </Typography>
                                     </Box>
                                 </Box>
@@ -208,19 +208,19 @@ function SoilMoistureSensorVariableDepth() {
                                     <Box display="flex" alignItems="center" mr={3}>
                                         <WaterDropIcon color="primary" sx={{ mr: 1 }} />
                                         <Typography variant="body1" component="span">
-                                            <strong>Soil Moisture (15cm):</strong> {latestData.p2} %
+                                            <strong>Soil Moisture (15cm):</strong> {latestData.p1} %
                                         </Typography>
                                     </Box>
                                     <Box display="flex" alignItems="center" mr={3}>
                                         <WaterDropIcon color="primary" sx={{ mr: 1 }} />
                                         <Typography variant="body1" component="span">
-                                            <strong>Soil Moisture (30cm):</strong> {latestData.p4} %
+                                            <strong>Soil Moisture (30cm):</strong> {latestData.p3} %
                                         </Typography>
                                     </Box>
                                     <Box display="flex" alignItems="center" mr={3} >
                                         <WaterDropIcon color="primary" sx={{ mr: 1 }} />
                                         <Typography variant="body1" component="span">
-                                            <strong>Soil Moisture (45cm):</strong> {latestData.p6} %
+                                            <strong>Soil Moisture (45cm):</strong> {latestData.p5} %
                                         </Typography>
                                     </Box>
                                 </Box>
