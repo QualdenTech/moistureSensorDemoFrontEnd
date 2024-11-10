@@ -14,7 +14,17 @@ function SoilMoistureSensorFixedDepth() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const deviceId = queryParams.get('deviceId');
-    const dateInputRef = useRef(null);
+    const fromDateRef = useRef(null);
+    const toDateRef = useRef(null);
+  
+    const handleFromDateClick = () => {
+      fromDateRef.current.showPicker();
+    };
+  
+    const handleToDateClick = () => {
+      toDateRef.current.showPicker();
+    };
+  
 
     const [apiDataByDeviceId, setApiDataByDeviceId] = useState(null);
     const [filteredNullData, setFilteredNullData] = useState(null);
@@ -64,11 +74,6 @@ function SoilMoistureSensorFixedDepth() {
         }
     }, [deviceId]);
 
-    const handleFocus = () => {
-        if (dateInputRef.current) {
-            dateInputRef.current.showPicker(); // Only works with user interaction
-        }
-    };
 
     const handleFilterData = () => {
         if (deviceId && fromDate && toDate) {
@@ -182,8 +187,9 @@ function SoilMoistureSensorFixedDepth() {
                             <Form.Control
                                 type="date"
                                 value={fromDate}
+                                ref={fromDateRef} 
                                 onChange={(e) => setFromDate(e.target.value)}
-                               onFocus={handleFocus} 
+                                onClick={handleFromDateClick}
                                 min={minDate}
                                 max={maxDate}
                             />
@@ -193,8 +199,9 @@ function SoilMoistureSensorFixedDepth() {
                             <Form.Control
                                 type="date"
                                 value={toDate}
+                                ref={toDateRef} 
                                 onChange={(e) => setToDate(e.target.value)}
-                               onFocus={handleFocus} 
+                                onClick={handleToDateClick} 
                                 min={minDate}
                                 max={maxDate}
                             />

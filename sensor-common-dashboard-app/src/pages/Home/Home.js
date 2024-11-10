@@ -4,10 +4,7 @@ import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import { Card, Typography } from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
 import 'font-awesome/css/font-awesome.min.css';
 
 import QualdenLogo from "../../Images/QualdenLogo.png"
@@ -200,7 +197,7 @@ function Home() {
               <ListItem>
                 <ListItemIcon>
                   {/* <i className="fa fa-water" style={{ fontSize: '24px', color: '#1976d2' }}></i> Water icon */}
-                  <i class="fa-solid fa-droplet" style={{ fontSize: '24px', color: '#1976d2' }}></i>
+                  <i className="fa-solid fa-droplet" style={{ fontSize: '24px', color: '#1976d2' }}></i>
                 </ListItemIcon>
                 <Typography className='list-font'>
                   Siphone System
