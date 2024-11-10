@@ -133,9 +133,14 @@ function SoilMoistureSensorVariableDepth() {
         if (!dateFilteredData || dateFilteredData.length === 0) return;
 
         const csvContent = [
-            Object.keys(dateFilteredData[0]).map(key => columnNames[key] || key).join(','), // Header
-            ...dateFilteredData.map(row =>
-                Object.keys(row).map(key => `"${row[key]}"`).join(',') // Rows
+            // Header row
+            Object.keys(dateFilteredData[0]).map(key => columnNames[key] || key).join(','),
+            
+            // Data rows with formatted 'createdAt' field
+            ...dateFilteredData.map(row => 
+                Object.keys(row).map(key => 
+                    key === 'createdAt' ? `"${formatDateWithdateAndTime(row[key])}"` : `"${row[key]}"`
+                ).join(',')
             ),
         ].join('\n');
 
