@@ -47,7 +47,6 @@ function SoilMoistureSensorVariableDepth() {
 
     useEffect(() => {
         if (apiDataByDeviceId) {
-            console.log("if apiDataByDeviceId",apiDataByDeviceId)
             const filteredDataTemp = NonNullFieldFilter(apiDataByDeviceId, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6']);
             setFilteredNullData(filteredDataTemp);
             setDateFilteredData(filteredDataTemp);
