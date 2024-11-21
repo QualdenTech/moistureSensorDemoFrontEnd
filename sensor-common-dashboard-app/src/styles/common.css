@@ -38,3 +38,14 @@
     font-family:'Verdana, sans-serif' ;
 }
 
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 20px;
+  }
+  
+  .chart-card {
+    min-width: 450px;
+  }
+  
+
