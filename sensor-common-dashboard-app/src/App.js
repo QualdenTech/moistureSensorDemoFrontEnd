@@ -6,6 +6,8 @@ import SilageMonitoringAlarmSystem from './pages/SilageMonitoringAlarmSystem/Sil
 import SoilMoistureSensorFixedDepth from './pages/SoilMoistureSensorFixedDepth/SoilMoistureSensorFixedDepth';
 import StartTopology from './pages/StartTopology/StartTopology';
 import SmartAutomaticWeatherStation from './pages/SmartAutomaticWeatherStation/SmartAutomaticWeatherStation';
+import DetailedGraph from './Common/DetailedGraph';
+import LargeGraph from './Common/LargeGraph';
 
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
         <Route path="/SoilMoistureSensorFixedDepth" element={<SoilMoistureSensorFixedDepth />} />
         <Route path="/StartTopology" element={<StartTopology />} />
         <Route path="/SmartAutomaticWeatherStation" element={<SmartAutomaticWeatherStation />} />
+        <Route path="/detailed-graph" element={<DetailedGraph />} />
+        <Route path="/large-graph" element={<LargeGraph />} />
 
 
         

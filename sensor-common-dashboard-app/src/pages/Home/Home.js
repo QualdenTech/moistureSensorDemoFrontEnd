@@ -7,9 +7,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import 'font-awesome/css/font-awesome.min.css';
 
-import QualdenLogo from "../../Images/QualdenLogo.png"
-import image4 from "../../Images/image4.png"
-import soilmoistureSensor from "../../Images/soil-moisture-sensor.png"
+import QualdenLogo from "../../Images/QualdenLogo.png";
+import image4 from "../../Images/image4.png";
+import soilmoistureSensor from "../../Images/soil-moisture-sensor.png";
+import siphoncPic from "../../Images/siphonPic.png";
 
 
 
@@ -171,9 +172,15 @@ function Home() {
                 </Typography>
               </ListItem>
               <ListItem>
-                <ListItemIcon>
-                  {/* <i className="fa fa-water" style={{ fontSize: '24px', color: '#1976d2' }}></i> Water icon */}
-                  <i className="fa-solid fa-droplet" style={{ fontSize: '24px', color: '#1976d2' }}></i>
+              <ListItemIcon>
+                  <img
+                    src={siphoncPic}
+                    alt="siphoncPic"
+                    style={{
+                      width: '40px',
+                      height: '50px',
+                    }}
+                  />
                 </ListItemIcon>
                 <Typography className='list-font'>
                   Siphone System

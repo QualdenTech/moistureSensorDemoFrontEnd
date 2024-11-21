@@ -1,10 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import '../../styles/common.css';
-import { Spinner, Container, Card, Button, Form, CardImg } from 'react-bootstrap';
-import Table from 'react-bootstrap/Table';
+import { Spinner, Container, Card, Button, Table, Form } from 'react-bootstrap';
+import { calculateHourlyAverages, FilteredDateFormat, formatDateWithdateAndTime } from '../../Common/FilteredDateFormat';
 import NonNullFieldFilter from '../../Common/NonNullFieldFilter';
-import { FilteredDateFormat, formatDateWithdateAndTime } from '../../Common/FilteredDateFormat';
+import { Line } from 'react-chartjs-2'; // Import Line chart
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -19,12 +31,38 @@ import GrainIcon from '@mui/icons-material/Grain';
 import BlurOnIcon from '@mui/icons-material/BlurOn';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+
+
 function SilageMonitoringAlarmSystem() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const deviceId = queryParams.get('deviceId');
   const fromDateRef = useRef(null);
   const toDateRef = useRef(null);
+
+  // Get the current date and the date 6 months ago
+  const currentDateForDateRange = new Date();
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(currentDateForDateRange.getMonth() - 6);
+  const minDate = sixMonthsAgo.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+  const maxDate = currentDateForDateRange.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+  const navigate = useNavigate();
+
+
+  const [apiDataByDeviceId, setApiDataByDeviceId] = useState([]);
+  const [filterCurrentDateData, setFilterCurrentDateData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [noDataMessage, setNoDataMessage] = useState('');
+  const [isDataFiltered, setIsDataFiltered] = useState(false);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [dateRangeFilteredData, setDateRangeFilteredData] = useState([]);
+  const [showChart, setShowChart] = useState(false); // State for chart visibility
+  const [latestData, setLatestData] = useState(null);
 
   const handleFromDateClick = () => {
     fromDateRef.current.showPicker();
@@ -35,32 +73,12 @@ function SilageMonitoringAlarmSystem() {
   };
 
 
-  const [apiDataByDeviceId, setApiDataByDeviceId] = useState(null);
-  const [filteredNullData, setFilteredNullData] = useState(null);
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
-  const [dateFilteredData, setDateFilteredData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isDataFiltered, setIsDataFiltered] = useState(false);
-  const [latestData, setLatestData] = useState(null);
-  const [noDataMessage, setNoDataMessage] = useState(''); // New state for no data message
-
-  // Get the current date and the date 6 months ago
-  const currentDate = new Date();
-  const sixMonthsAgo = new Date();
-  sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
-  const minDate = sixMonthsAgo.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-  const maxDate = currentDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-
-
+  const currentDate = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
   useEffect(() => {
     if (apiDataByDeviceId) {
-      const filteredDataTemp = NonNullFieldFilter(apiDataByDeviceId, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'p11']);
-      setFilteredNullData(filteredDataTemp);
-      setDateFilteredData(filteredDataTemp);
-
+      const filteredLatestDataTemp = NonNullFieldFilter(apiDataByDeviceId, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'p11']);
       // Find the latest data entry by sorting the response by 'createdAt'
-      const sortedData = [...filteredDataTemp].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const sortedData = [...filteredLatestDataTemp].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setLatestData(sortedData[0]);  // Set the most recent data
     }
   }, [apiDataByDeviceId]);
@@ -73,11 +91,10 @@ function SilageMonitoringAlarmSystem() {
         .then(data => {
           setLoading(false);
           if (data) {
-            const nonNullData = NonNullFieldFilter(data, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'p11']);
-            setApiDataByDeviceId(nonNullData);
-            // setApiDataByDeviceId(data);
+            setApiDataByDeviceId(data);
+            filterDataByCurrentDateData(data, currentDate); // Default filter by current date
           } else {
-            console.error("No data received");
+            setNoDataMessage('No data available for the selected device.');
           }
         })
         .catch(error => {
@@ -86,14 +103,30 @@ function SilageMonitoringAlarmSystem() {
         });
     }
   }, [deviceId]);
-  const handleFocus = (ref) => {
-    if (ref.current) {
-      ref.current.focus();
-      ref.current.click();
-    }
+
+  // const chartDataByCurrentDateData = (data, date) => {
+  //   const filtered = data.filter(item => item.createdAt.startsWith(date));
+  //   setFilterCurrentDateData(filtered);
+  // };
+
+  // function to calculate hourly averages
+  const filterDataByCurrentDateData = (data, date) => {
+    const filtered = data.filter((item) => item.createdAt.startsWith(date));
+    const hourlyAverages = calculateHourlyAverages(filtered);
+    setFilterCurrentDateData(hourlyAverages);
   };
 
-  const handleFilterData = () => {
+  const showAllData = () => {
+    setFilterCurrentDateData(apiDataByDeviceId);
+    setIsDataFiltered(false);
+  };
+
+  const showCurrentDateData = () => {
+    filterDataByCurrentDateData(apiDataByDeviceId, currentDate);
+    setIsDataFiltered(false);
+  };
+
+  const handleDateRangeFilterData = () => {
     if (deviceId && fromDate && toDate) {
       const url = `/api/moistureSensor/getDataByDeviceIdWithDateRange?deviceId=${deviceId}&fromDate=${fromDate}&toDate=${toDate}`;
       setLoading(true);
@@ -102,14 +135,15 @@ function SilageMonitoringAlarmSystem() {
         .then(data => {
           setLoading(false);
           if (data && data.message) {
-            // Check for specific message
             setNoDataMessage(data.message);
-            setDateFilteredData([]); // Clear data if no records are found
+            setFilterCurrentDateData([]); // Clear table if no records are found
+            setShowChart(false);
           } else if (data) {
             const nonNullData = NonNullFieldFilter(data, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'p11']);
-            setDateFilteredData(nonNullData);
+            setDateRangeFilteredData(nonNullData);
+            setFilterCurrentDateData(nonNullData); // Update the data for rendering
             setIsDataFiltered(nonNullData.length > 0);
-            // setDateFilteredData(NonNullFieldFilter(data));
+            setShowChart(true);
           } else {
             console.error("No data received");
           }
@@ -123,28 +157,30 @@ function SilageMonitoringAlarmSystem() {
     }
   };
 
-  const handleClearFilter = () => {
+
+  const handleClearDateRangeFilterData = () => {
     setLoading(true);
     setTimeout(() => {
-      setDateFilteredData(filteredNullData);
-      setIsDataFiltered(false);
       setFromDate('');
       setToDate('');
-      setNoDataMessage('');
+      showCurrentDateData();
+      setIsDataFiltered(false);
+      setShowChart(false);
       setLoading(false);
     }, 300);
   };
 
 
+
   const downloadCSV = () => {
-    if (!dateFilteredData || dateFilteredData.length === 0) return;
+    if (!dateRangeFilteredData || dateRangeFilteredData.length === 0) return;
 
     const csvContent = [
       // Header row
-      Object.keys(dateFilteredData[0]).map(key => columnNames[key] || key).join(','),
+      Object.keys(dateRangeFilteredData[0]).map(key => columnNames[key] || key).join(','),
 
       // Data rows with formatted 'createdAt' field
-      ...dateFilteredData.map(row =>
+      ...dateRangeFilteredData.map(row =>
         Object.keys(row).map(key =>
           key === 'createdAt' ? `"${formatDateWithdateAndTime(row[key])}"` : `"${row[key]}"`
         ).join(',')
@@ -162,6 +198,11 @@ function SilageMonitoringAlarmSystem() {
     document.body.removeChild(link);
   };
 
+
+  const handleGraphClick = (parameterKey) => {
+    navigate(`/detailed-graph?deviceId=${deviceId}&parameter=${parameterKey}`);
+  };
+
   const columnNames = {
     p1: "NH₃ (Ammonia) (ppm)",
     p2: "NO₂ (Nitrogen Dioxide) (ppm)",
@@ -177,21 +218,18 @@ function SilageMonitoringAlarmSystem() {
     createdAt: "Timestamp"
   };
 
-  const columnsToDisplay = Object.keys(dateFilteredData[0] || {}).filter(
-    (key) => key !== "id" && key !== "deviceId"
+  const columnsToDisplay = Object.keys(filterCurrentDateData[0] || {}).filter(
+    key => key !== 'id' && key !== 'deviceId'
   );
 
-  // Define rowsToDisplay by filtering out rows where both p1 and p2 are null
-  const rowsToDisplay = dateFilteredData.filter(row => row.p1 !== null || row.p2 !== null);
-
-
   return (
-    <Container className="mt-4" >
-      <Card className="mx-auto" >
+    <Container className="mt-4">
+      <Card className="mx-auto mb-3">
         <Card.Header>
           <h2>Sensor Data for Device {deviceId}</h2>
         </Card.Header>
         <Card.Body>
+
           {/* Latest Data */}
           {latestData && (
             <Card className="mb-4">
@@ -301,8 +339,6 @@ function SilageMonitoringAlarmSystem() {
               </Card.Body>
             </Card>
           )}
-
-
           {/* Date Filter Inputs */}
           <Form>
             <Form.Group className="mb-3">
@@ -329,11 +365,10 @@ function SilageMonitoringAlarmSystem() {
                 max={maxDate}
               />
             </Form.Group>
-            <Button variant="primary" onClick={handleFilterData} className="me-2">
+            <Button variant="primary" onClick={handleDateRangeFilterData} className="me-2">
               Filter Data
             </Button>
-            <Button variant="secondary" onClick={handleClearFilter}
-            >
+            <Button variant="secondary" onClick={handleClearDateRangeFilterData}>
               Clear Filter
             </Button>
             <Button
@@ -347,6 +382,56 @@ function SilageMonitoringAlarmSystem() {
           </Form>
         </Card.Body>
       </Card>
+      {showChart && filterCurrentDateData.length > 0 && (
+        <div className="chart-grid">
+          {Object.keys(columnNames)
+            .filter((key) => key.startsWith("p")) // Only include parameter columns
+            .map((key, index) => (
+              <Card className="chart-card" key={index}>
+                <Card.Header>{columnNames[key]}</Card.Header>
+                <Card.Body>
+                  <a
+                    href={`/large-graph?param=${key}&deviceId=${deviceId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <Line
+                      data={{
+                        labels: filterCurrentDateData.map((item) =>
+                          new Date(item.createdAt).toLocaleString()
+                        ),
+                        datasets: [
+                          {
+                            label: columnNames[key],
+                            data: filterCurrentDateData.map((item) =>
+                              parseFloat(item[key])
+                            ),
+                            borderColor: `hsl(${index * 30}, 70%, 50%)`,
+                            borderWidth: 2,
+                          },
+                        ],
+                      }}
+                      options={{
+                        responsive: true,
+                        plugins: {
+                          legend: {
+                            position: "top",
+                          },
+                          title: {
+                            display: true,
+                            text: columnNames[key],
+                          },
+                        },
+                      }}
+                    />
+                  </a>
+                </Card.Body>
+              </Card>
+            ))}
+        </div>
+      )}
+
 
       {/* Show Loader when Data is loading */}
       {loading && (
@@ -354,42 +439,56 @@ function SilageMonitoringAlarmSystem() {
           <Spinner animation="border" />
         </div>
       )}
-
-      {/* Display filtered data */}
-      {!loading && rowsToDisplay.length > 0 ? (
-        <Card className="mt-4">
-          <Card.Body>
-            <Table striped bordered hover responsive>
-              <thead>
-                <tr>
-                  {columnsToDisplay.map((key, index) => (
-                    <th key={index}>{columnNames[key] || key}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rowsToDisplay.map((row, index) => (
-                  <tr key={index}>
-                    {columnsToDisplay.map((key, idx) => (
-                      <td key={idx}>
-                        {key === 'createdAt' ? formatDateWithdateAndTime(row[key]) : row[key]}
-                      </td>
+      {!loading && (
+        <>
+          <div className="mb-3 mt-3">
+            {/* Buttons for showing all data or current date data */}
+            <Button variant="primary" className="me-2" onClick={showCurrentDateData}>
+              Show Current Date Data
+            </Button>
+            <Button variant="secondary" onClick={showAllData}>
+              Show All Data
+            </Button>
+          </div>
+          {/* Display filtered data */}
+          {filterCurrentDateData.length > 0 ? (
+            <Card className="mt-4">
+              <Card.Body>
+                <Table striped bordered hover responsive>
+                  <thead>
+                    <tr>
+                      {columnsToDisplay.map((key, index) => (
+                        <th key={index}>{columnNames[key] || key}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filterCurrentDateData.map((row, index) => (
+                      <tr key={index}>
+                        {columnsToDisplay.map((key, idx) => (
+                          <td key={idx}>
+                            {key === 'createdAt'
+                              // ? new Date(row[key]).toLocaleString()
+                              ? new Date(row[key]).toLocaleString()
+                              : row[key]}
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Card.Body>
-        </Card>
-      ) : !loading && noDataMessage ? (
-        <p className='mt-3'>{noDataMessage}</p> // Display API's no data message
-      ) : (
-        !loading && (
-          <p >No data available for the selected device.</p> // Default message
-        )
+                  </tbody>
+                </Table>
+              </Card.Body>
+            </Card>
+          ) : noDataMessage ? (
+            <p className="mt-3">{noDataMessage}</p> // Display API's no data message
+          ) : (
+            <p>No data available for the selected device.</p> // Default message
+          )}
+        </>
       )}
     </Container>
   );
+
 }
 
 export default SilageMonitoringAlarmSystem;
