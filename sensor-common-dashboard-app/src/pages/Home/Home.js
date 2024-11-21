@@ -70,43 +70,19 @@ function Home() {
   return (
     <div>
       {/* Main Container */}
-      <Container fluid className="p-0" style={{ padding: '20px' }}>
-        {/* Title at the top with Material UI Typography for better design */}
-        <img
-          src={QualdenLogo}
-          alt="QualdenLogo"
-          style={{
-            width: '200px',
-            height: '80px',
-            marginRight: '10px',
-            display: 'flex',    // Added to enable flex layout
-            justifyContent: 'center',  // Centers horizontally
-            alignItems: 'center',  // Centers vertically
-            margin: '0 auto',  // Centers the image within its container
-          }}
-        />
-        {/* <Typography
-          variant="h3"
-          component="h1"
-          align="center"
-          style={{
-            marginTop: '20px',
-            fontWeight: 'bold', 
-            color: '#1976d2', 
-          }}
-        >
-          ABCE Technology
-        </Typography>
-   */}
+      <Container fluid className="p-0" style={{  display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center', marginTop:'60px'}}>
+        
         {/* Row for left (65%) and right (35%) divs */}
         <Row className="w-100 flex-grow-1 m-0">
 
           {/* Left side - 65% with background image and Material UI Card */}
           <Card
             sx={{
-              width: { xs: '100%', md: '63%'},  // Full width on small screens, 65% on medium and larger
-              height: '80vh', // Adjust height as needed
-              backgroundImage: `url(${image4})`, // Replace with your image URL
+              width: { xs: '100%', md: '63%' },
+              height: '80vh',
+              backgroundImage: `url(${image4})`,
               backgroundSize: '55%',
               backgroundPosition: 'left',
               backgroundRepeat: 'no-repeat',
@@ -117,8 +93,8 @@ function Home() {
               textAlign: 'center',
               boxShadow: 4, // Material UI shadow
               border: '1px solid #ddd', // Border for the card
-              marginLeft:'6px',
-              paddingLeft:'40px',
+              marginLeft: '6px',
+              paddingLeft: '40px',
             }}
           >
 
@@ -217,19 +193,36 @@ function Home() {
           {/* Right side - 35% for Device ID Navigation with Material UI Card */}
           <Card
             sx={{
-              width: { xs: '100%', md: '36%' },  // Full width on small screens, 35% on medium and larger
+              width: { xs: '100%', md: '36%' },
+              height: '80vh',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
               padding: '16px',
-              boxShadow: 3, // Material UI shadow
-              border: '1px solid #ddd', // Border for the card
-              marginRight:'5px'
+              boxShadow: 3,
+              border: '1px solid #ddd',
+              marginRight: '5px'
+             
             }}
           >
-            <h2>Device ID Navigation</h2>
-            <Form className="w-100">
+            <img
+              src={QualdenLogo}
+              alt="QualdenLogo"
+              style={{
+                width: '200px',
+                height: '80px',
+                marginBottom: '90px',
+                // marginRight: '10px',
+                // // marginBottom: '40px',
+                // display: 'flex',
+                // justifyContent: 'center',
+                // alignItems: 'center',
+                // margin: '0 auto',
+              }}
+            />
+            <h2 style={{marginBottom: '15px' }}>Device ID Navigation</h2>
+            <Form className="w-100" style={{marginTop: '15px',}}>
               <Form.Group>
                 <Form.Label>Enter Device ID</Form.Label>
                 <Form.Control
