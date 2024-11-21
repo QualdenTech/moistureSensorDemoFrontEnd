@@ -170,24 +170,26 @@ function SilageMonitoringAlarmSystem() {
     }, 300);
   };
 
-
-
   const downloadCSV = () => {
     if (!dateRangeFilteredData || dateRangeFilteredData.length === 0) return;
-
+  
+    // Use a proper encoding to ensure special characters are displayed correctly
     const csvContent = [
-      // Header row
+      // Header row with column names mapped to their display names
       Object.keys(dateRangeFilteredData[0]).map(key => columnNames[key] || key).join(','),
-
-      // Data rows with formatted 'createdAt' field
+  
+      // Data rows
       ...dateRangeFilteredData.map(row =>
-        Object.keys(row).map(key =>
-          key === 'createdAt' ? `"${formatDateWithdateAndTime(row[key])}"` : `"${row[key]}"`
-        ).join(',')
+        Object.keys(row)
+          .map(key =>
+            key === 'createdAt' ? `"${formatDateWithdateAndTime(row[key])}"` : `"${row[key]}"`
+          )
+          .join(',')
       ),
     ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+    // Encode the content using UTF-8 BOM for proper Excel display
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.href = url;
@@ -197,6 +199,33 @@ function SilageMonitoringAlarmSystem() {
     link.click();
     document.body.removeChild(link);
   };
+  
+
+  // const downloadCSV = () => {
+  //   if (!dateRangeFilteredData || dateRangeFilteredData.length === 0) return;
+
+  //   const csvContent = [
+  //     // Header row
+  //     Object.keys(dateRangeFilteredData[0]).map(key => columnNames[key] || key).join(','),
+
+  //     // Data rows with formatted 'createdAt' field
+  //     ...dateRangeFilteredData.map(row =>
+  //       Object.keys(row).map(key =>
+  //         key === 'createdAt' ? `"${formatDateWithdateAndTime(row[key])}"` : `"${row[key]}"`
+  //       ).join(',')
+  //     ),
+  //   ].join('\n');
+
+  //   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  //   const link = document.createElement('a');
+  //   const url = URL.createObjectURL(blob);
+  //   link.href = url;
+  //   link.setAttribute('download', `Filtered_Data_${deviceId}.csv`);
+  //   link.style.visibility = 'hidden';
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
 
 
   const handleGraphClick = (parameterKey) => {
